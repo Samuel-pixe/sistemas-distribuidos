@@ -1,0 +1,109 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Hotel Jardim Europa</title>
+        <!-- Inclua as bibliotecas do Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+        <!--Fonte Awesome-->
+        <script src="https://kit.fontawesome.com/6eb517267f.js" crossorigin="anonymous"></script>
+        
+    </head>
+    <body>
+        <!-- Barra de navegação -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="#">Jardim Europa</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Início |</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"> Cadastrar Quartos |</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"> Serviços |</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"> Contato |</a>
+                        </li>
+                        <!-- Botão de listar reservas na barra de navegação -->
+                        <li class="nav-item">
+                            <a class="nav-link " href="{{ url_for('listar_reserva') }}"> Lista de Reservas |</a>
+                        </li>
+                        <!-- Botão de listar hospedes na barra de navegação -->
+                        <li class="nav-item">
+                            <a class="nav-link " href="{{ url_for('listar_usuario') }}"> Lista de Hospedes |</a>
+                        </li>
+                        <!-- Botão de reserva na barra de navegação -->
+                        <li class="nav-item">
+                            <a class="nav-link " href="{{ url_for('reserva_hotel') }}">Cadastrar Reserva |</a>
+                        </li>
+                        <!-- Cadastro de usuário na barra de navegação -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('usuario_hotel') }}"> Cadastrar Hospede</a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Apresentação do hotel -->
+        <div class="container mt-2">
+            <div class="row">
+                <div class="col-lg-10">
+                    <h1>Sistema de Gerenciamento de Reservas</h1>
+                    <h2>Bem-Vindo ao Jardim Europa Hotel!</h2>
+                    <p>Caro(a) Funcionário(a),</p>
+                    <p>É com grande entusiasmo que damos as boas-vindas à equipe do Jardim Europa Hotel. Estamos muito felizes por tê-lo(a) conosco e ansiosos para colaborarmos juntos na entrega de uma experiência excepcional aos nossos hóspedes.</p>
+                    <p>Localizado no coração da cidade, o Hotel Jardim Europa é o seu refúgio perfeito para uma estadia inesquecível. Com uma tradição de excelência em hospitalidade que se estende por décadas, nossa missão é proporcionar uma experiência única e memorável a todos os nossos hóspedes.</p>
+                    <p>Nossos serviços de primeira classe incluem um restaurante requintado que oferece uma culinária deliciosa e uma carta de vinhos diversificada. Nosso spa e academia proporcionam um ambiente relaxante e energizante para os hóspedes que desejam se mimar e manter-se em forma durante a estadia.</p>
+                    <p>Além disso, estamos comprometidos com a sustentabilidade e o respeito ao meio ambiente. Implementamos práticas responsáveis para minimizar nosso impacto e criar um ambiente saudável para todos os nossos hóspedes.</p>
+                    
+
+
+
+
+                    <!-- Imagem do hotel -->
+                    <img src="{{ url_for('serve_image', filename='imagem2.png') }}" alt="Hotel Jardim Europa" class="w-auto" style="max-width: 110%;">
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <footer class="bg-dark text-light py-3 fixed-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>&copy; 2023 Hotel RP-Jardim Europa. Todos os direitos reservados.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <a href="#" class="btn btn-outline-light btn-social">
+                            <i class="fab fa-facebook fa-lg"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-social">
+                            <i class="fab fa-twitter fa-lg"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-social">
+                            <i class="fab fa-instagram fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        
+
+        <!-- Inclua o Bootstrap JavaScript no final do corpo para ativar os recursos do Bootstrap -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/js/bootstrap.min.js"></script>
+    </body>
+    </html>

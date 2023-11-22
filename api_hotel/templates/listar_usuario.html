@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuários</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2>Lista de Usuários</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Data de Nascimento</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="listaUsuarios">
+                <!-- Dados dos usuários serão inseridos aqui dinamicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', carregarUsuarios);
+
+        function carregarUsuarios() {
+            fetch('http://127.0.0.1:5000/hotel-hospedes/doc')
+                .then(response => response.json())
+                .then(data => {
+                    const listaUsuarios = document.getElementById('listaUsuarios');
+
+                    // Limpar dados existentes
+                    listaUsuarios.innerHTML = '';
+
+                    // Adicionar os usuários recuperados do servidor
+                    data.usuarios.forEach(usuario => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${usuario.id}</td>
+                            <td><input type="text" id="nome-${usuario.id}" value="${usuario.nome_usuario}" disabled></td>
+                            <td><input type="text" id="email-${usuario.id}" value="${usuario.email}" disabled></td>
+                            <td><input type="text" id="nascimento-${usuario.id}" value="${usuario.data_nascimento}" disabled></td>
+                            <td>
+                                <button class="btn btn-primary" onclick="editarUsuario(${usuario.id})">Editar</button>
+                                <button class="btn btn-success" onclick="salvarUsuario(${usuario.id})">Salvar</button>
+                                <button class="btn btn-danger" onclick="excluirUsuario(${usuario.id})">Excluir</button>
+                            </td>
+                        `;
+                        listaUsuarios.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar usuários:', error);
+                });
+        }
+
+        function editarUsuario(id) {
+            // Habilitar a edição dos campos
+            document.getElementById(`nome-${id}`).disabled = false;
+            document.getElementById(`email-${id}`).disabled = false;
+            document.getElementById(`nascimento-${id}`).disabled = false;
+        }
+
+        function salvarUsuario(id) {
+            // Desabilitar a edição dos campos
+            document.getElementById(`nome-${id}`).disabled = true;
+            document.getElementById(`email-${id}`).disabled = true;
+            document.getElementById(`nascimento-${id}`).disabled = true;
+
+            // Obter os dados editados
+            const nomeUsuario = document.getElementById(`nome-${id}`).value;
+            const email = document.getElementById(`email-${id}`).value;
+            const dataNascimento = document.getElementById(`nascimento-${id}`).value;
+
+            // Enviar um pedido PUT para atualizar o usuário
+            fetch(`http://127.0.0.1:5000/hotel-hospedes/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        nome_usuario: nomeUsuario,
+                        email: email,
+                        data_nascimento: dataNascimento,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    // Pode exibir uma mensagem de sucesso ou atualizar a lista de usuários, se necessário
+                    alert('Usuário atualizado com sucesso!');
+                    carregarUsuarios();
+                })
+                .catch(error => {
+                    console.error('Erro ao atualizar usuário:', error);
+                });
+        }
+
+        function excluirUsuario(id) {
+            const confirmacao = confirm("Deseja realmente excluir este usuário?");
+            if (confirmacao) {
+                fetch(`http://127.0.0.1:5000/hotel-hospedes/${id}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.resposta);
+                        carregarUsuarios(); // Atualizar a lista após excluir
+                    })
+                    .catch(error => {
+                        console.error('Erro ao excluir usuário:', error);
+                    });
+            }
+        }
+    </script>
+</body>
+
+</html>

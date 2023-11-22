@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Reservas</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Lista de Reservas</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ID do Quarto</th>
+                    <th>Data de Início</th>
+                    <th>Data de Fim</th>
+                    <th>Nome do Cliente</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="listaReservas">
+                <!-- Dados das reservas serão inseridos aqui dinamicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', carregarReservas);
+
+        function carregarReservas() {
+            fetch('http://127.0.0.1:5000/hotel-Reservas/doc')
+                .then(response => response.json())
+                .then(data => {
+                    const listaReservas = document.getElementById('listaReservas');
+
+                    // Limpar dados existentes
+                    listaReservas.innerHTML = '';
+
+                    // Adicionar as reservas recuperadas do servidor
+                    data.reservas.forEach(reserva => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${reserva.id}</td>
+                            <td><input type="text" id="quarto-${reserva.id}" value="${reserva.id_quarto}" disabled></td>
+                            <td><input type="text" id="inicio-${reserva.id}" value="${reserva.data_inicio}" disabled></td>
+                            <td><input type="text" id="fim-${reserva.id}" value="${reserva.data_fim}" disabled></td>
+                            <td><input type="text" id="nome-${reserva.id}" value="${reserva.nome_cliente}" disabled></td>
+                            <td class="row">
+                                <button class="btn btn-primary" onclick="editarReserva(${reserva.id})">Editar</button>
+                                <button class="btn btn-success" onclick="salvarReserva(${reserva.id})">Salvar</button>
+                                <button class="btn btn-danger" onclick="excluirReserva(${reserva.id})">Excluir</button>
+                            </td>
+                        `;
+                        listaReservas.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar reservas:', error);
+                });
+        }
+
+        function editarReserva(id) {
+            // Habilitar a edição dos campos
+            document.getElementById(`quarto-${id}`).disabled = false;
+            document.getElementById(`inicio-${id}`).disabled = false;
+            document.getElementById(`fim-${id}`).disabled = false;
+            document.getElementById(`nome-${id}`).disabled = false;
+        }
+
+        function salvarReserva(id) {
+            // Desabilitar a edição dos campos
+            document.getElementById(`quarto-${id}`).disabled = true;
+            document.getElementById(`inicio-${id}`).disabled = true;
+            document.getElementById(`fim-${id}`).disabled = true;
+            document.getElementById(`nome-${id}`).disabled = true;
+
+            // Obter os dados editados
+            const idQuarto = document.getElementById(`quarto-${id}`).value;
+            const dataInicio = document.getElementById(`inicio-${id}`).value;
+            const dataFim = document.getElementById(`fim-${id}`).value;
+            const nomeCliente = document.getElementById(`nome-${id}`).value;
+
+            // Enviar um pedido PUT para atualizar a reserva
+            fetch(`http://127.0.0.1:5000/hotel-Reservas/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id_quarto: idQuarto,
+                    data_inicio: dataInicio,
+                    data_fim: dataFim,
+                    nome_cliente: nomeCliente,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Pode exibir uma mensagem de sucesso ou atualizar a lista de reservas, se necessário
+                alert('Reserva atualizada com sucesso!');
+                carregarReservas();
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar reserva:', error);
+            });
+        }
+
+
+
+        function excluirReserva(id) {
+            const confirmacao = confirm("Deseja realmente excluir esta reserva?");
+            if (confirmacao) {
+                fetch(`http://127.0.0.1:5000/hotel-Reservas/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.resposta);
+                    carregarReservas(); // Atualizar a lista após excluir
+                })
+                .catch(error => {
+                    console.error('Erro ao excluir reserva:', error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

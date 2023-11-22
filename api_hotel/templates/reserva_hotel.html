@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva no Chalé Hotel</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-center">Reserva Hotel Jardim Europa</h2>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="nome">Hospede:</label>
+                                <input type="text" class="form-control" id="nome" placeholder="Digite o nome do Hospede">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">E-mail:</label>
+                                <input type="email" class="form-control" id="email" placeholder="Digite seu e-mail">
+                            </div>
+                            <div class="form-group">
+                                <label for="checkin">Data de Check-in:</label>
+                                <input type="date" class="form-control" id="checkin">
+                            </div>
+                            <div class="form-group">
+                                <label for="checkout">Data de Check-out:</label>
+                                <input type="date" class="form-control" id="checkout">
+                            </div>
+                            <div class="form-group">
+                                <label for="quarto">Selecione o Quarto:</label>
+                                <select class="form-control" id="quarto"></select>
+                                <!-- Adicione o campo oculto para armazenar o ID do quarto -->
+                                <input type="hidden" id="id_quarto" name="id_quarto">
+                            </div>
+                            <button type="button" onclick="realizarReserva()" class="btn btn-primary btn-block">Reservar Agora</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Altere o campo oculto para armazenar o ID do quarto -->
+<input type="hidden" id="id_quarto" name="id_quarto">
+
+    <script>
+        function carregarQuartos() {
+            fetch('http://127.0.0.1:5000/hotel-Quartos/doc')
+                .then(response => response.json())
+                .then(data => {
+                    const selectQuarto = document.getElementById('quarto');
+
+                    // Limpar opções existentes
+                    selectQuarto.innerHTML = '';
+
+                    // Adicionar a opção padrão
+                    const optionPadrao = document.createElement('option');
+                    optionPadrao.value = ''; // Valor vazio para indicar nenhum quarto selecionado
+                    optionPadrao.textContent = 'Selecione um Quarto';
+                    selectQuarto.appendChild(optionPadrao);
+
+                    // Adicionar as opções recuperadas do servidor
+                    data.quartos.forEach(quarto => {
+                        const option = document.createElement('option');
+                        option.value = quarto.id_quarto;  // Use o ID do quarto como valor
+                        option.textContent = quarto.id_quarto + ' - ' + quarto.numero_quarto;  // Exiba o número do quarto
+                        selectQuarto.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar quartos:', error);
+                });
+        }
+
+        // Chamar a função ao carregar a página
+        document.addEventListener('DOMContentLoaded', carregarQuartos);
+
+        // Função para realizar a reserva
+        function realizarReserva() {
+            event.preventDefault();
+
+            // Obter os dados do formulário
+            const nome = document.getElementById('nome').value;
+            const checkin = document.getElementById('checkin').value;
+            const checkout = document.getElementById('checkout').value;
+
+            // Obter o ID do quarto selecionado
+            const id_quarto = document.getElementById('quarto').value;
+
+            // Atribuir o ID do quarto ao campo oculto
+            document.getElementById('id_quarto').value = id_quarto;
+
+            // Realizar a chamada para o backend (substitua a URL e o método conforme necessário)
+            fetch('http://127.0.0.1:5000/hotel-Reservas/doc', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id_quarto: id_quarto,
+                    data_inicio: checkin,
+                    data_fim: checkout,
+                    nome_cliente: nome,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {                              
+                if (data.sucesso) {
+                    console.log(data);
+                    window.location.href = "{{ url_for('index') }}";  //Caminho 
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao realizar reserva:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>
